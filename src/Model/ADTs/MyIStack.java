@@ -16,4 +16,5 @@ public interface MyIStack<T>{
     void clear();
     ListIterator<T> reverseIterator();
     List<String> getValuesAsStrings();
+    T top() throws ADTException;
 }

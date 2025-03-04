@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.example</groupId>
-  <artifactId>ToyLanguageInterpreter_GUI</artifactId>
+  <artifactId>TLI_GUI_LAB</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>ToyLanguageInterpreter_GUI</name>
+  <name>TLI_GUI_LAB</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -124,7 +124,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.example.toylanguageinterpreter_gui/com.example.toylanguageinterpreter_gui.GUI</mainClass>
+              <mainClass>com.example.tli_gui_lab/com.example.tli_gui_lab.HelloApplication</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>

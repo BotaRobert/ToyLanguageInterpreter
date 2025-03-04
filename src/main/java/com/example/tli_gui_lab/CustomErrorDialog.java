@@ -1,4 +1,4 @@
-package com.example.toylanguageinterpreter_gui;
+package com.example.tli_gui_lab;
 
 import javafx.scene.control.Alert;
 

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="521.0" prefWidth="701.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tli_gui_lab.MainWindowController">
+   <children>
+      <SplitPane dividerPositions="0.8191964285714286" layoutX="150.0" layoutY="67.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <GridPane layoutX="143.0" layoutY="139.0" prefHeight="397.3333333333333" prefWidth="486.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="35.33332824707031" minHeight="2.6666539311408997" prefHeight="18.666656494140625" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="78.66666666666667" minHeight="10.0" prefHeight="78.00001017252605" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="33.33330535888672" minHeight="10.0" prefHeight="24.66666666666667" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="79.99997965494791" minHeight="10.0" prefHeight="68.66665649414062" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="46.00001017252603" minHeight="10.0" prefHeight="27.333353678385407" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="93.33334350585935" minHeight="10.0" prefHeight="79.33334350585938" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="79.00002034505206" minHeight="10.0" prefHeight="29.33332316080731" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="124.33333333333331" minHeight="10.0" prefHeight="89.99998982747394" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="76.00002034505212" minHeight="10.0" prefHeight="27.333353678385436" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="112.0" minHeight="10.0" prefHeight="79.99997965494794" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="112.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="112.0" minHeight="10.0" prefHeight="94.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="112.0" minHeight="10.0" prefHeight="45.33331298828125" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="113.3333740234375" minHeight="10.0" prefHeight="90.66668701171875" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <ListView fx:id="Out" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3" />
+                        <ListView fx:id="FileTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="5" />
+                        <TableView fx:id="HeapTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                          <columns>
+                            <TableColumn fx:id="address" prefWidth="223.33337914943695" text="Adress" />
+                            <TableColumn fx:id="value" prefWidth="261.9999542236328" text="Value" />
+                          </columns>
+                        </TableView>
+                        <TableView fx:id="SymTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="7">
+                          <columns>
+                            <TableColumn fx:id="var_name" prefWidth="282.6666566133499" text="Variable Name" />
+                            <TableColumn fx:id="var_value" prefWidth="286.0" text="Value" />
+                          </columns>
+                        </TableView>
+                        <ListView fx:id="ExeStack" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="9" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Heap" textAlignment="CENTER" wrappingWidth="569.2884216308594" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Out" textAlignment="CENTER" wrappingWidth="570.1367492675781" GridPane.rowIndex="2" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="File Table" textAlignment="CENTER" wrappingWidth="570.13671875" GridPane.rowIndex="4" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Symbol Table" textAlignment="CENTER" wrappingWidth="572.1366882324219" GridPane.rowIndex="6" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Execution Stack" textAlignment="CENTER" wrappingWidth="569.4700622558594" GridPane.rowIndex="8" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Procedure Table" textAlignment="CENTER" wrappingWidth="564.8033752441406" GridPane.rowIndex="10" />
+                        <TableView fx:id="ProcedureTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="11">
+                          <columns>
+                            <TableColumn fx:id="name_and_params" prefWidth="284.6666260957718" text="Name and parameters" />
+                            <TableColumn fx:id="body" prefWidth="284.0000305175781" text="Body" />
+                          </columns>
+                        </TableView>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lock Table" textAlignment="CENTER" wrappingWidth="569.4700622558594" GridPane.rowIndex="12" />
+                        <TableView fx:id="locktable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="13">
+                          <columns>
+                            <TableColumn fx:id="locktable_index" prefWidth="278.0000001192093" text="Inedex" />
+                            <TableColumn fx:id="locktable_value" prefWidth="290.6666564941406" text="Values" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <SplitPane dividerPositions="0.7964527027027026" layoutX="-55.0" layoutY="69.0" orientation="VERTICAL" prefHeight="397.3333333333333" prefWidth="104.66666666666667" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <SplitPane dividerPositions="0.13390928725701945" layoutX="-80.0" layoutY="-93.0" orientation="VERTICAL" prefHeight="311.3333333333333" prefWidth="102.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <items>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="49.0" prefWidth="99.0">
+                                       <children>
+                                          <TextField fx:id="noOfPrgStates" layoutX="-40.0" layoutY="6.0" prefHeight="38.0" prefWidth="99.33333333333333" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                       <children>
+                                          <ListView fx:id="PrgStateIds" layoutY="-110.0" onMouseClicked="#handlePrgStateSelect" prefHeight="151.33333333333334" prefWidth="99.33333333333333" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                </items>
+                              </SplitPane>
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <Button layoutX="14.0" layoutY="39.0" mnemonicParsing="false" onAction="#handleOneStepButton" prefHeight="77.33333333333333" prefWidth="102.0" text="Make One Step" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

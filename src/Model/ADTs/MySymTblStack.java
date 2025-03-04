@@ -1,6 +1,7 @@
 package Model.ADTs;
 
 import Exceptions.ADTException;
+import Model.Values.IValue;
 
 import java.util.Iterator;
 import java.util.List;
@@ -8,22 +9,22 @@ import java.util.ListIterator;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class MyStack<T> implements MyIStack<T>{
-    Stack<T> stack;
+public class MySymTblStack implements MyISymTblStack{
+    Stack<MyIDictionary<String, IValue>> stack;
 
-    public MyStack() {
-        stack = new Stack<T>();
+    public MySymTblStack() {
+        stack = new Stack<MyIDictionary<String, IValue>>();
     }
 
     @Override
-    public T pop() throws ADTException {
+    public MyIDictionary<String, IValue> pop() throws ADTException {
         if(stack.isEmpty())
             throw new ADTException("Empty Stack");
         return stack.pop();
     }
 
     @Override
-    public void push(T v) {
+    public void push(MyIDictionary<String, IValue> v) {
         stack.push(v);
     }
 
@@ -38,7 +39,7 @@ public class MyStack<T> implements MyIStack<T>{
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<MyIDictionary<String, IValue>> iterator() {
         return stack.iterator();
     }
 
@@ -48,7 +49,7 @@ public class MyStack<T> implements MyIStack<T>{
     }
 
     @Override
-    public ListIterator<T> reverseIterator() {
+    public ListIterator<MyIDictionary<String, IValue>> reverseIterator() {
         return stack.listIterator(stack.size());
     }
 
@@ -58,10 +59,17 @@ public class MyStack<T> implements MyIStack<T>{
     }
 
     @Override
-    public T top() throws ADTException {
+    public MyIDictionary<String, IValue> top() throws ADTException {
         if(stack.isEmpty())
             throw new ADTException("Empty Stack");
-        return stack.pop();
+        return stack.getLast();
     }
 
+    @Override
+    public MyISymTblStack clone() {
+        var copy = new MySymTblStack();
+        for(var c : stack)
+            copy.push(c.clone());
+        return copy;
+    }
 }

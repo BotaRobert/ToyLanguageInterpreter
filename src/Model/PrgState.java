@@ -8,6 +8,7 @@ import Model.Statements.*;
 import Model.ADTs.*;
 import Model.Types.IType;
 import Model.Values.IValue;
+import javafx.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.FileDescriptor;
@@ -18,10 +19,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PrgState {
     MyIStack<IStmt> exeStack;
-    MyIDictionary<String, IValue> symTable;
+    MyISymTblStack symTables;
     MyIList<IValue> out;
     MyIDictionary<String, BufferedReader> fileTable;
     static AtomicInteger id=new AtomicInteger(0);
+    MyIDictionary<String, Pair<List<String>,IStmt>> procTable;
+    ILockTable<Integer,Integer> lockTable;
+
+    public MyIDictionary<String, Pair<List<String>, IStmt>> getProcTable() {
+        return procTable;
+    }
+
+    public ILockTable<Integer, Integer> getLockTable() {
+        return lockTable;
+    }
+
+    public void setProcTable(MyIDictionary<String, Pair<List<String>, IStmt>> procTable) {
+        this.procTable = procTable;
+    }
+
+    public MyISymTblStack getSymTables() {
+        return symTables;
+    }
+
+    public void setSymTables(MyISymTblStack symTables) {
+        this.symTables = symTables;
+    }
 
     public int getOwnId() {
         return ownId;
@@ -48,23 +71,30 @@ public class PrgState {
         this.fileTable = fileTable;
     }
 
-    public PrgState(MyIStack<IStmt> stk, MyIDictionary<String, IValue> symtbl, MyIList<IValue> ot, IStmt prg,MyIHeap<Integer,IValue> heap,MyIDictionary<String, BufferedReader> fileTable) {
+    public PrgState(MyIStack<IStmt> stk, MyISymTblStack symtbl, MyIList<IValue> ot, IStmt prg,
+                    MyIHeap<Integer,IValue> heap,MyIDictionary<String, BufferedReader> fileTable,MyIDictionary<String,
+            Pair<List<String>,IStmt>> procTable,ILockTable<Integer,Integer> lockTable) {
         exeStack = stk;
-        symTable = symtbl;
+        symTables = symtbl;
         out = ot;
         this.fileTable = fileTable;
         originalProgram=prg.deepcopy();//recreate the entire original prg
         this.heap = heap;
         stk.push(originalProgram);
         ownId = id.incrementAndGet();
+        this.procTable=procTable;
+        this.lockTable=lockTable;
     }
 
     public void init(){
         exeStack = new MyStack<IStmt>();
         out = new MyList<IValue>();
-        symTable = new MyDictionary<String,IValue>();
+        symTables = new MySymTblStack();
+        symTables.push(new MyDictionary<String,IValue>());
         fileTable = new MyFileTable<String, BufferedReader>();
         heap = new MyHeap<Integer,IValue>();
+        procTable=new MyDictionary<String, Pair<List<String>,IStmt>>();
+        this.lockTable = new LockTable<Integer, Integer>();
         exeStack.push(originalProgram);
     }
 
@@ -73,11 +103,18 @@ public class PrgState {
         this.init();
     }
 
+    public PrgState(IStmt prg,MyIDictionary<String, Pair<List<String>,IStmt>> procTable){
+        originalProgram=prg.deepcopy();
+        this.init();
+        ownId = id.incrementAndGet();
+        this.procTable=procTable;
+    }
     public PrgState(IStmt prg){
         originalProgram=prg.deepcopy();
         this.init();
         ownId = id.incrementAndGet();
     }
+
 
     public MyIList<IValue> getOut() {
         return out;
@@ -96,16 +133,13 @@ public class PrgState {
     }
 
     public MyIDictionary<String, IValue> getSymTable() {
-        return symTable;
+        return symTables.top();
     }
 
-    public void setSymTable(MyIDictionary<String, IValue> symTable) {
-        this.symTable = symTable;
-    }
 
     public void kill(){
         exeStack.clear();
-        symTable.clear();
+        symTables.clear();
         out.clear();
     }
 
@@ -157,6 +191,13 @@ public class PrgState {
             var pair = files.next();
             str+=pair.getKey()+"\n";
         }
+
+        str+="\nLockTable: \n";
+        var locks = this.getLockTable().iterator();
+        while(locks.hasNext()){
+            var pair = locks.next();
+            str+=pair.getKey()+" --> "+pair.getValue().toString()+"\n";
+        }
         str+="--------------------------------------------------------------\n\n";
         return str;
     }
@@ -169,11 +210,11 @@ public class PrgState {
     }
 
     public List<String> getSymValuesStrings(){
-        return symTable.getValuesAsStrings();
+        return this.getSymTable().getValuesAsStrings();
     }
 
     public List<String> getSymKeysStrings(){
-        return symTable.getKeysAsStrings();
+        return this.getSymTable().getKeysAsStrings();
     }
 
     public List<String> getOutStrings(){
@@ -190,4 +231,8 @@ public class PrgState {
     public List<String> getExeStackStrings(){
         return exeStack.getValuesAsStrings();
     }
+
+    public List<String> getLockTableKeys(){return lockTable.getKeysAsStrings();}
+    public List<String> getLockTableValues(){return lockTable.getValuesAsStrings();}
+
 }

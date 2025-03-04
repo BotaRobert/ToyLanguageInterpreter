@@ -1,4 +1,4 @@
-module com.example.toylanguageinterpreter_gui {
+module com.example.tli_gui_lab {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -11,6 +11,6 @@ module com.example.toylanguageinterpreter_gui {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
 
-    opens com.example.toylanguageinterpreter_gui to javafx.fxml;
-    exports com.example.toylanguageinterpreter_gui;
+    opens com.example.tli_gui_lab to javafx.fxml;
+    exports com.example.tli_gui_lab;
 }

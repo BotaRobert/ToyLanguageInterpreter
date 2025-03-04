@@ -1,27 +1,26 @@
-package com.example.toylanguageinterpreter_gui;
+package com.example.tli_gui_lab;
 
+import Model.ADTs.MyDictionary;
+import Model.ADTs.MyIDictionary;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import Controller.Controller;
 import Exceptions.MyException;
-import Model.ADTs.MyDictionary;
 import Model.Expressions.*;
-import Model.PrgState;
 import Model.Statements.*;
 import Model.Types.*;
 import Model.Values.BoolValue;
 import Model.Values.IntValue;
 import Model.Values.StringValue;
-import Repository.IRepository;
-import Repository.Repository;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -320,10 +319,227 @@ public class StmtSelectController {
         return ex14;
     }
 
+    static IStmt Example15() {
+        IStmt ex15 = new CompStmt(
+                new VarDeclStmt("a", new RefType(new IntType())), // Declares a as a reference to int
+                new CompStmt(
+                        new HeapAllocStmt("a", new ValueExp(new IntValue(20))), // Allocates 20 in the heap and assigns its reference to a
+                        new CompStmt(
+                                new ForStmt(
+                                        "v",
+                                        new ValueExp(new IntValue(0)), // Initialization: v = 0
+                                        new ValueExp(new IntValue(3)), // Condition: v < 3
+                                        new ArithExp('+', new VarExp("v"), new ValueExp(new IntValue(1))), // Increment: v = v + 1
+                                        new ForkStmt( // Forks a new thread
+                                                new CompStmt(
+                                                        new PrintStmt(new VarExp("v")), // Prints the value of v
+                                                        new AssignStmt("v",
+                                                                new ArithExp('*',
+                                                                        new VarExp("v"),
+                                                                        new ReadHeapExp(new VarExp("a")) // v = v * rH(a)
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                ),
+                                new PrintStmt(new ReadHeapExp(new VarExp("a"))) // Prints the value stored at the address referred to by a
+                        )
+                )
+        );
+        return ex15;
+    }
+
+    static IStmt Example16() {
+        IStmt ex16 = new CompStmt(
+                new VarDeclStmt("v1", new RefType(new IntType())), // Declares v1 as a reference to int
+                new CompStmt(
+                        new VarDeclStmt("v2", new RefType(new IntType())), // Declares v2 as a reference to int
+                        new CompStmt(
+                                new VarDeclStmt("x", new IntType()), // Declares x as an int
+                                new CompStmt(
+                                        new VarDeclStmt("q", new IntType()), // Declares q as an int
+                                        new CompStmt(
+                                                new HeapAllocStmt("v1", new ValueExp(new IntValue(20))), // Allocates 20 in the heap and assigns its reference to v1
+                                                new CompStmt(
+                                                        new HeapAllocStmt("v2", new ValueExp(new IntValue(30))), // Allocates 30 in the heap and assigns its reference to v2
+                                                        new CompStmt(
+                                                                new newLock("x"), // Creates a new lock for x
+                                                                new CompStmt(
+                                                                        new ForkStmt( // First fork
+                                                                                new CompStmt(
+                                                                                        new ForkStmt( // Nested fork inside first fork
+                                                                                                new CompStmt(
+                                                                                                        new lockStmt("x"), // Locks x
+                                                                                                        new CompStmt(
+                                                                                                                new HeapWriteStmt(
+                                                                                                                        new VarExp("v1"),
+                                                                                                                        new ArithExp('-',
+                                                                                                                                new ReadHeapExp(new VarExp("v1")),
+                                                                                                                                new ValueExp(new IntValue(1))
+                                                                                                                        ) // v1 = rH(v1) - 1
+                                                                                                                ),
+                                                                                                                new unlockStmt("x") // Unlocks x
+                                                                                                        )
+                                                                                                )
+                                                                                        ),
+                                                                                        new CompStmt(
+                                                                                                new lockStmt("x"), // Locks x
+                                                                                                new CompStmt(
+                                                                                                        new HeapWriteStmt(
+                                                                                                                new VarExp("v1"),
+                                                                                                                new ArithExp('*',
+                                                                                                                        new ReadHeapExp(new VarExp("v1")),
+                                                                                                                        new ValueExp(new IntValue(10))
+                                                                                                                ) // v1 = rH(v1) * 10
+                                                                                                        ),
+                                                                                                        new unlockStmt("x") // Unlocks x
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        ),
+                                                                        new CompStmt(
+                                                                                new newLock("q"), // Creates a new lock for q
+                                                                                new CompStmt(
+                                                                                        new ForkStmt( // Second fork
+                                                                                                new CompStmt(
+                                                                                                        new ForkStmt( // Nested fork inside second fork
+                                                                                                                new CompStmt(
+                                                                                                                        new lockStmt("q"), // Locks q
+                                                                                                                        new CompStmt(
+                                                                                                                                new HeapWriteStmt(
+                                                                                                                                        new VarExp("v2"),
+                                                                                                                                        new ArithExp('+',
+                                                                                                                                                new ReadHeapExp(new VarExp("v2")),
+                                                                                                                                                new ValueExp(new IntValue(5))
+                                                                                                                                        ) // v2 = rH(v2) + 5
+                                                                                                                                ),
+                                                                                                                                new unlockStmt("q") // Unlocks q
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        ),
+                                                                                                        new CompStmt(
+                                                                                                                new lockStmt("q"), // Locks q
+                                                                                                                new CompStmt(
+                                                                                                                        new HeapWriteStmt(
+                                                                                                                                new VarExp("v2"),
+                                                                                                                                new ArithExp('*',
+                                                                                                                                        new ReadHeapExp(new VarExp("v2")),
+                                                                                                                                        new ValueExp(new IntValue(10))
+                                                                                                                                ) // v2 = rH(v2) * 10
+                                                                                                                        ),
+                                                                                                                        new unlockStmt("q") // Unlocks q
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        ),
+                                                                                        new CompStmt(
+                                                                                                new NopStmt(), // No-op
+                                                                                                new CompStmt(
+                                                                                                        new NopStmt(), // No-op
+                                                                                                        new CompStmt(
+                                                                                                                new NopStmt(), // No-op
+                                                                                                                new CompStmt(
+                                                                                                                        new NopStmt(), // No-op
+                                                                                                                        new CompStmt(
+                                                                                                                                new lockStmt("x"), // Locks x
+                                                                                                                                new CompStmt(
+                                                                                                                                        new PrintStmt(new ReadHeapExp(new VarExp("v1"))), // Prints rH(v1)
+                                                                                                                                        new CompStmt(
+                                                                                                                                                new unlockStmt("x"), // Unlocks x
+                                                                                                                                                new CompStmt(
+                                                                                                                                                        new lockStmt("q"), // Locks q
+                                                                                                                                                        new CompStmt(
+                                                                                                                                                                new PrintStmt(new ReadHeapExp(new VarExp("v2"))), // Prints rH(v2)
+                                                                                                                                                                new unlockStmt("q") // Unlocks q
+                                                                                                                                                        )
+                                                                                                                                                )
+                                                                                                                                        )
+                                                                                                                                )
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        return ex16;
+    }
+
+    static IStmt Example24() {
+        IStmt ex24 = new CompStmt(
+                new VarDeclStmt("v", new IntType()), // Declares v as an integer
+                new CompStmt(
+                        new VarDeclStmt("w", new IntType()), // Declares w as an integer
+                        new CompStmt(
+                                new AssignStmt("v", new ValueExp(new IntValue(2))), // v = 2
+                                new CompStmt(
+                                        new AssignStmt("w", new ValueExp(new IntValue(5))), // w = 5
+                                        new CompStmt(
+                                                new callStmt("sum", Arrays.asList(
+                                                        new ArithExp('*', new VarExp("v"), new ValueExp(new IntValue(10))),
+                                                        new VarExp("w")
+                                                )), // Calls sum(v*10, w)
+                                                new CompStmt(
+                                                        new PrintStmt(new VarExp("v")), // Prints v
+                                                        new ForkStmt(
+                                                                new CompStmt(
+                                                                new callStmt("product", Arrays.asList(new VarExp("v"), new VarExp("w"))), // Fork and call product(v, w)
+                                                                        new ForkStmt(new callStmt("sum", Arrays.asList(new VarExp("v"), new VarExp("w")))
+                                                                )
+                                                                )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        ));
+        return ex24;
+    }
+
+
+
+    static IStmt Procedure1() {
+        IStmt pr1 = new CompStmt(
+                new VarDeclStmt("v", new IntType()), // Declares v as an integer
+                new CompStmt(
+                        new AssignStmt("v", new ArithExp('+', new VarExp("a"), new VarExp("b"))), // v = a + b
+                        new PrintStmt(new VarExp("v")) // Prints v
+                )
+        );
+        return pr1;
+    }
+
+    static IStmt Procedure2() {
+        IStmt pr2 = new CompStmt(
+                new VarDeclStmt("v", new IntType()), // Declares v as an integer
+                new CompStmt(
+                        new AssignStmt("v", new ArithExp('*', new VarExp("a"), new VarExp("b"))), // v = a * b
+                        new PrintStmt(new VarExp("v")) // Prints v
+                )
+        );
+        return pr2;
+    }
+
+
+
+
     @FXML
     private ListView<String> myListView;
 
+    @FXML
+    private ListView<String> availableProcedureStrings;
+
     private List<IStmt> stmtList;
+    private MyIDictionary<String, Pair<List<String>,IStmt>> allProceduresTable;
+    private MyIDictionary<String, Pair<List<String>,IStmt>> activeProceduresTable;
     private Controller controller;
     private MainWindowController main_window_controller;
     private boolean mainWindowOpen;
@@ -331,12 +547,23 @@ public class StmtSelectController {
     @FXML
     public void initialize() {
         stmtList = new ArrayList<IStmt>(Arrays.asList(Example1(), Example2(), Example3(), Example4(), Example5(),
-                Example6(), Example7(), Example8(), Example9(), Example10(), Example11(), Example12(), Example13(), Example14()));
+                Example6(), Example7(), Example8(), Example9(), Example10(), Example11(), Example12(), Example13(),
+                Example14(),Example15(),Example16(),Example24()));
+        ArrayList<String> procItems = new ArrayList<String>(Arrays.asList("sum(a,b)=\n"+Procedure1().toString(),
+                "product(a,b)=\n"+Procedure2().toString()));
+
+        allProceduresTable =new MyDictionary<String, Pair<List<String>,IStmt>>();
+        allProceduresTable.put("sum",new Pair<>(Arrays.asList("a", "b"), Procedure1()));
+        allProceduresTable.put("product",new Pair<>(Arrays.asList("a", "b"), Procedure2()));
 
         ObservableList<String> stringList = stmtList.stream()
                 .map(IStmt::toString)
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
+        availableProcedureStrings.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        activeProceduresTable= new MyDictionary<String, Pair<List<String>, IStmt>>();
+
+        availableProcedureStrings.getItems().addAll(procItems);
         myListView.setItems(stringList);
     }
 
@@ -359,10 +586,8 @@ public class StmtSelectController {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
             int selectedItemIndex = myListView.getSelectionModel().getSelectedIndex();
             IStmt selectedStmt = stmtList.get(selectedItemIndex);
-
-            System.out.println("Double-clicked on: " + selectedStmt.toString());
             try{
-                controller=Controller.initController(selectedStmt,"f");
+                controller=Controller.initController(selectedStmt,"f",activeProceduresTable);
                 try {
                     loadMainWindow();
                 }catch (IOException e) {
@@ -380,6 +605,17 @@ public class StmtSelectController {
                 );
             }
 
+        }
+    }
+
+    @FXML
+    private void handleDoubleClickProcedure(MouseEvent event){
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2){
+            String procedure = availableProcedureStrings.getSelectionModel()
+                                            .getSelectedItem();
+            String proc_name = procedure.substring(0,procedure.indexOf("("));
+            activeProceduresTable.put(proc_name,allProceduresTable.get(proc_name));
+            availableProcedureStrings.getItems().remove(procedure);
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.toylanguageinterpreter_gui;
+package com.example.tli_gui_lab;
 
 import Controller.Controller;
 import Exceptions.MyException;
@@ -47,6 +47,24 @@ public class MainWindowController {
     @FXML
     private TableColumn<String, String> var_value;
 
+    @FXML
+    private TableView<TableItem> ProcedureTable;
+
+    @FXML
+    private TableColumn<String, String> name_and_params;
+
+    @FXML
+    private TableColumn<String, String> body;
+
+    @FXML
+    private TableColumn<String, String> locktable_index;
+
+    @FXML
+    private TableColumn<String, String> locktable_value;
+
+    @FXML
+    private TableView<TableItem> locktable;
+
     private Controller controller;
     private Controller beforeRemovalController;
 
@@ -86,6 +104,10 @@ public class MainWindowController {
         var_name.setCellValueFactory(new PropertyValueFactory<>("field2"));
         address.setCellValueFactory(new PropertyValueFactory<>("field1"));
         value.setCellValueFactory(new PropertyValueFactory<>("field2"));
+        name_and_params.setCellValueFactory(new PropertyValueFactory<>("field1"));
+        body.setCellValueFactory(new PropertyValueFactory<>("field2"));
+        locktable_index.setCellValueFactory(new PropertyValueFactory<>("field1"));
+        locktable_value.setCellValueFactory(new PropertyValueFactory<>("field2"));
     }
 
     public void updateWindow(){
@@ -93,10 +115,12 @@ public class MainWindowController {
         ObservableList<Integer> controllerPrgStateIds =FXCollections.observableArrayList(beforeRemovalController.getPrgStateIds());
         PrgStateIds.setItems(controllerPrgStateIds);
         noOfPrgStates.setText("No. of programs: "+String.valueOf(controllerPrgStateIds.size()));
+
         if(PrgStateIds.getSelectionModel().getSelectedItem()==null)
             current_prg = PrgStateIds.getItems().get(0);
         else
             current_prg = (int) PrgStateIds.getSelectionModel().getSelectedItem();
+
         ObservableList<String> exestack = FXCollections.observableArrayList(beforeRemovalController.getExeStackStrings(current_prg));
         ExeStack.setItems(exestack);
 
@@ -105,7 +129,6 @@ public class MainWindowController {
 
         ObservableList<String> filetable = FXCollections.observableArrayList(beforeRemovalController.getFileTableKeysStrings(current_prg));
         FileTable.setItems(filetable);
-
 
         ObservableList<TableItem> symTblItems=FXCollections.observableArrayList();
         var symTblStringValues=beforeRemovalController.getSymValuesStrings(current_prg);
@@ -122,12 +145,34 @@ public class MainWindowController {
             heapItems.add(new TableItem(heapAddresses.get(i),heapValues.get(i)));
         }
         HeapTable.setItems(heapItems);
+
+        ObservableList<TableItem> proctTableItems=FXCollections.observableArrayList();
+        var procTable = beforeRemovalController.getProcTable(current_prg);
+        var procs = procTable.iterator();
+        while(procs.hasNext()) {
+            var pair = procs.next();
+            String nameAndParmas = pair.getKey() + "\n";
+            var params = pair.getValue().getKey();
+            for (var param : params)
+                nameAndParmas += param.toString();
+
+            proctTableItems.add(new TableItem(nameAndParmas, pair.getValue().getValue().toString()));
+        }
+        ProcedureTable.setItems(proctTableItems);
+
+        ObservableList<TableItem> locktableItems=FXCollections.observableArrayList();
+        var lockatableIndexes=beforeRemovalController.getLockTableKeys(current_prg);
+        var lockatableValues=beforeRemovalController.getLockTableValues(current_prg);
+        for(int i=0;i<lockatableIndexes.size();i++){
+            locktableItems.add(new TableItem(lockatableIndexes.get(i),lockatableValues.get(i)));
+        }
+        locktable.setItems(locktableItems);
+
     }
 
 
     @FXML
     private void handleOneStepButton(ActionEvent event) {
-        System.out.println("One Step Button clicked");
         try {
             beforeRemovalController = controller.oneStepForAllPrg();
         } catch (MyException e) {

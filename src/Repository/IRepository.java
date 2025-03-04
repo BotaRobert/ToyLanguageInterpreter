@@ -1,9 +1,12 @@
 package Repository;
 
 import Exceptions.RepoException;
+import Model.ADTs.MyIDictionary;
 import Model.ADTs.MyIHeap;
 import Model.PrgState;
+import Model.Statements.IStmt;
 import Model.Values.IValue;
+import javafx.util.Pair;
 
 import java.util.List;
 
@@ -29,4 +32,8 @@ public interface IRepository {
     List<String> getExeStackStrings(int id);
     List<Integer> getPrgStateIds();
     IRepository deepCopy();
+
+    List<String> getLockTableKeys(int id);
+    List<String> getLockTableValues(int id);
+    MyIDictionary<String, Pair<List<String>, IStmt>> getProcTable(int id);
 }

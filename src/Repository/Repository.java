@@ -1,9 +1,12 @@
 package Repository;
 
 import Exceptions.RepoException;
+import Model.ADTs.MyIDictionary;
 import Model.ADTs.MyIHeap;
 import Model.PrgState;
+import Model.Statements.IStmt;
 import Model.Values.IValue;
+import javafx.util.Pair;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -103,6 +106,7 @@ public class Repository implements IRepository {
         return getPrgWithId(id).getExeStackStrings().reversed();
     }
 
+    public MyIDictionary<String, Pair<List<String>, IStmt>> getProcTable(int id){return getPrgWithId(id).getProcTable();}
     public List<Integer> getPrgStateIds(){
         return prgStates.stream().map(x->x.getOwnId()).toList();
     }
@@ -111,4 +115,9 @@ public class Repository implements IRepository {
         repo_copy.setPrgList(prgStates);
         return repo_copy;
     }
+
+    public List<String> getLockTableKeys(int id){return getPrgWithId(id).getLockTableKeys();}
+    public List<String> getLockTableValues(int id){return getPrgWithId(id).getLockTableValues();}
+
+
 }

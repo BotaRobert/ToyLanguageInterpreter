@@ -82,9 +82,9 @@ class Interpreter {
                         new CompStmt(new AssignStmt("v", new ValueExp(new IntValue(1))),
                                 new CompStmt(new IfStmt
                                         (new RelationExp(new VarExp("a"),new VarExp("v"),"<"),
-                                        new AssignStmt("v",
-                                        new ValueExp(new IntValue(2))),
-                                        new AssignStmt("v", new ValueExp(new IntValue(3)))),
+                                                new AssignStmt("v",
+                                                        new ValueExp(new IntValue(2))),
+                                                new AssignStmt("v", new ValueExp(new IntValue(3)))),
                                         new PrintStmt(new VarExp("v"))))));
         return ex6;
     }
@@ -307,63 +307,332 @@ class Interpreter {
         return ex14;
     }
 
+    static IStmt Example15() {
+        IStmt ex15 = new CompStmt(
+                new VarDeclStmt("a", new RefType(new IntType())), // Declares a as a reference to int
+                new CompStmt(
+                        new HeapAllocStmt("a", new ValueExp(new IntValue(20))), // Allocates 20 in the heap and assigns its reference to a
+                        new CompStmt(
+                                new ForStmt(
+                                        "v",
+                                        new ValueExp(new IntValue(0)), // Initialization: v = 0
+                                        new ValueExp(new IntValue(3)), // Condition: v < 3
+                                        new ArithExp('+', new VarExp("v"), new ValueExp(new IntValue(1))), // Increment: v = v + 1
+                                        new ForkStmt( // Forks a new thread
+                                                new CompStmt(
+                                                        new PrintStmt(new VarExp("v")), // Prints the value of v
+                                                        new AssignStmt("v",
+                                                                new ArithExp('*',
+                                                                        new VarExp("v"),
+                                                                        new ReadHeapExp(new VarExp("a")) // v = v * rH(a)
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                ),
+                                new PrintStmt(new ReadHeapExp(new VarExp("a"))) // Prints the value stored at the address referred to by a
+                        )
+                )
+        );
+        return ex15;
+    }
+
+    static IStmt Example16() {
+        IStmt ex16 = new CompStmt(
+                new VarDeclStmt("v1", new RefType(new IntType())), // Declares v1 as a reference to int
+                new CompStmt(
+                        new VarDeclStmt("v2", new RefType(new IntType())), // Declares v2 as a reference to int
+                        new CompStmt(
+                                new VarDeclStmt("x", new IntType()), // Declares x as an int
+                                new CompStmt(
+                                        new VarDeclStmt("q", new IntType()), // Declares q as an int
+                                        new CompStmt(
+                                                new HeapAllocStmt("v1", new ValueExp(new IntValue(20))), // Allocates 20 in the heap and assigns its reference to v1
+                                                new CompStmt(
+                                                        new HeapAllocStmt("v2", new ValueExp(new IntValue(30))), // Allocates 30 in the heap and assigns its reference to v2
+                                                        new CompStmt(
+                                                                new newLock("x"), // Creates a new lock for x
+                                                                new CompStmt(
+                                                                        new ForkStmt( // First fork
+                                                                                new CompStmt(
+                                                                                        new ForkStmt( // Nested fork inside first fork
+                                                                                                new CompStmt(
+                                                                                                        new lockStmt("x"), // Locks x
+                                                                                                        new CompStmt(
+                                                                                                                new HeapWriteStmt(
+                                                                                                                        new VarExp("v1"),
+                                                                                                                        new ArithExp('-',
+                                                                                                                                new ReadHeapExp(new VarExp("v1")),
+                                                                                                                                new ValueExp(new IntValue(1))
+                                                                                                                        ) // v1 = rH(v1) - 1
+                                                                                                                ),
+                                                                                                                new unlockStmt("x") // Unlocks x
+                                                                                                        )
+                                                                                                )
+                                                                                        ),
+                                                                                        new CompStmt(
+                                                                                                new lockStmt("x"), // Locks x
+                                                                                                new CompStmt(
+                                                                                                        new HeapWriteStmt(
+                                                                                                                new VarExp("v1"),
+                                                                                                                new ArithExp('*',
+                                                                                                                        new ReadHeapExp(new VarExp("v1")),
+                                                                                                                        new ValueExp(new IntValue(10))
+                                                                                                                ) // v1 = rH(v1) * 10
+                                                                                                        ),
+                                                                                                        new unlockStmt("x") // Unlocks x
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        ),
+                                                                        new CompStmt(
+                                                                                new newLock("q"), // Creates a new lock for q
+                                                                                new CompStmt(
+                                                                                        new ForkStmt( // Second fork
+                                                                                                new CompStmt(
+                                                                                                        new ForkStmt( // Nested fork inside second fork
+                                                                                                                new CompStmt(
+                                                                                                                        new lockStmt("q"), // Locks q
+                                                                                                                        new CompStmt(
+                                                                                                                                new HeapWriteStmt(
+                                                                                                                                        new VarExp("v2"),
+                                                                                                                                        new ArithExp('+',
+                                                                                                                                                new ReadHeapExp(new VarExp("v2")),
+                                                                                                                                                new ValueExp(new IntValue(5))
+                                                                                                                                        ) // v2 = rH(v2) + 5
+                                                                                                                                ),
+                                                                                                                                new unlockStmt("q") // Unlocks q
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        ),
+                                                                                                        new CompStmt(
+                                                                                                                new lockStmt("q"), // Locks q
+                                                                                                                new CompStmt(
+                                                                                                                        new HeapWriteStmt(
+                                                                                                                                new VarExp("v2"),
+                                                                                                                                new ArithExp('*',
+                                                                                                                                        new ReadHeapExp(new VarExp("v2")),
+                                                                                                                                        new ValueExp(new IntValue(10))
+                                                                                                                                ) // v2 = rH(v2) * 10
+                                                                                                                        ),
+                                                                                                                        new unlockStmt("q") // Unlocks q
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        ),
+                                                                                        new CompStmt(
+                                                                                                new NopStmt(), // No-op
+                                                                                                new CompStmt(
+                                                                                                        new NopStmt(), // No-op
+                                                                                                        new CompStmt(
+                                                                                                                new NopStmt(), // No-op
+                                                                                                                new CompStmt(
+                                                                                                                        new NopStmt(), // No-op
+                                                                                                                        new CompStmt(
+                                                                                                                                new lockStmt("x"), // Locks x
+                                                                                                                                new CompStmt(
+                                                                                                                                        new PrintStmt(new ReadHeapExp(new VarExp("v1"))), // Prints rH(v1)
+                                                                                                                                        new CompStmt(
+                                                                                                                                                new unlockStmt("x"), // Unlocks x
+                                                                                                                                                new CompStmt(
+                                                                                                                                                        new lockStmt("q"), // Locks q
+                                                                                                                                                        new CompStmt(
+                                                                                                                                                                new PrintStmt(new ReadHeapExp(new VarExp("v2"))), // Prints rH(v2)
+                                                                                                                                                                new unlockStmt("q") // Unlocks q
+                                                                                                                                                        )
+                                                                                                                                                )
+                                                                                                                                        )
+                                                                                                                                )
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        return ex16;
+    }
+
+    static IStmt Example17() {
+        IStmt ex17 = new CompStmt(
+                new VarDeclStmt("a", new RefType(new IntType())), // Declares a as a reference to int
+                new CompStmt(
+                        new HeapAllocStmt("a", new ValueExp(new IntValue(20))), // Allocates 20 in the heap and assigns its reference to a
+                        new CompStmt(
+                                new ForStmt(
+                                        "v",
+                                        new ValueExp(new IntValue(0)), // Initialization: v = 0
+                                        new ValueExp(new IntValue(3)), // Condition: v < 3
+                                        new ArithExp('+', new VarExp("v"), new ValueExp(new IntValue(1))), // Increment: v = v + 1
+                                        new ForkStmt( // Forks a new thread
+                                                new CompStmt(
+                                                        new PrintStmt(new VarExp("v")), // Prints the value of v
+                                                        new AssignStmt("v",
+                                                                new ArithExp('*',
+                                                                        new VarExp("v"),
+                                                                        new ReadHeapExp(new VarExp("a")) // v = v * rH(a)
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                ),
+                                new PrintStmt(new ReadHeapExp(new VarExp("a"))) // Prints the value stored at the address referred to by a
+                        )
+                )
+        );
+        return ex17;
+    }
+
+
+
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         System.out.println("Enter log file path: ");
         String logFilePath = in.nextLine();
 
         TextMenu menu = new TextMenu();
-        menu.addCommand(new ExitCommand("0", "exit"));
+        try{
+            menu.addCommand(new ExitCommand("0", "exit"));
+        }
+        catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        menu.addCommand(new RunExample("1", "int v; v=2;Print(v)",
-                Controller.initController(Example1(),logFilePath)));
+        try {
+            menu.addCommand(new RunExample("1", "int v; v=2;Print(v)",
+                    Controller.initController(Example1(), logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
+        try{
+            menu.addCommand(new RunExample("2", "int a;int b; a=2+3*5;b=a+1;Print(b)",
+                    Controller.initController(Example2(),logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        menu.addCommand(new RunExample("2", "int a;int b; a=2+3*5;b=a+1;Print(b)",
-                Controller.initController(Example2(),logFilePath)));
+        try{
+            menu.addCommand(new RunExample("3", "bool a; int v; a=true;(If a Then v=2 Else v=3);Print(v)",
+                    Controller.initController(Example3(),logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        menu.addCommand(new RunExample("3", "bool a; int v; a=true;(If a Then v=2 Else v=3);Print(v)",
-                Controller.initController(Example3(),logFilePath)));
+        try{
+            menu.addCommand(new RunExample("4", "int a; bool b; a=b;",
+                    Controller.initController(Example4(),logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        menu.addCommand(new RunExample("4", "int a; bool b; a=b;",
-                Controller.initController(Example4(),logFilePath)));
+        try{
+            IStmt ex5 = Example5();
+            menu.addCommand(new RunExample("5", "\n"+ex5.toString()+"\n", Controller.initController(ex5,logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex5 = Example5();
-        menu.addCommand(new RunExample("5", "\n"+ex5.toString()+"\n", Controller.initController(ex5,logFilePath)));
+        try{
+            menu.addCommand(new RunExample("6","int a; int v; v=1;(If a<v Then v=2 Else v=3);Print(v)",
+                    Controller.initController(Example6(),logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        menu.addCommand(new RunExample("6","int a; int v; v=1;(If a<v Then v=2 Else v=3);Print(v)",
-                Controller.initController(Example6(),logFilePath)));
+        try{
+            menu.addCommand(new RunExample("7","Ref int v;new(v,20);Ref Ref int a; new(a,v);print(v);print(a)",
+                    Controller.initController(Example7(),logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        menu.addCommand(new RunExample("7","Ref int v;new(v,20);Ref Ref int a; new(a,v);print(v);print(a)",
-                Controller.initController(Example7(),logFilePath)));
+        try{
+            IStmt ex8=Example8();
+            menu.addCommand(new RunExample("8","\n"+ex8.toString()+"\n",
+                    Controller.initController(ex8,logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex8=Example8();
-        menu.addCommand(new RunExample("8","\n"+ex8.toString()+"\n",
-                Controller.initController(ex8,logFilePath)));
+        try{
+            IStmt ex9=Example9();
+            menu.addCommand(new RunExample("9","\n"+ex9.toString()+"\n",
+                    Controller.initController(ex9,logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex9=Example9();
-        menu.addCommand(new RunExample("9","\n"+ex9.toString()+"\n",
-                Controller.initController(ex9,logFilePath)));
+        try{
+            IStmt ex10 = Example10();
+            menu.addCommand(new RunExample("10", "\n" + ex10.toString()+"\n",
+                    Controller.initController(ex10, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex10 = Example10();
-        menu.addCommand(new RunExample("10", "\n" + ex10.toString()+"\n",
-                Controller.initController(ex10, logFilePath)));
+        try{
+            IStmt ex11 = Example11();
+            menu.addCommand(new RunExample("11", "\n" + ex11.toString()+"\n",
+                    Controller.initController(ex11, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex11 = Example11();
-        menu.addCommand(new RunExample("11", "\n" + ex11.toString()+"\n",
-                Controller.initController(ex11, logFilePath)));
+        try{
+            IStmt ex12 = Example12();
+            menu.addCommand(new RunExample("12", "\n" + ex12.toString()+"\n",
+                    Controller.initController(ex12, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex12 = Example12();
-        menu.addCommand(new RunExample("12", "\n" + ex12.toString()+"\n",
-                Controller.initController(ex12, logFilePath)));
+        try{
+            IStmt ex13 = Example13();
+            menu.addCommand(new RunExample("13", "\n" + ex13.toString()+'\n',
+                    Controller.initController(ex13, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex13 = Example13();
-        menu.addCommand(new RunExample("13", "\n" + ex13.toString()+'\n',
-                Controller.initController(ex13, logFilePath)));
+        try{
+            IStmt ex14 = Example14();
+            menu.addCommand(new RunExample("14", "\n" + ex14.toString(),
+                    Controller.initController(ex14, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
-        IStmt ex14 = Example14();
-        menu.addCommand(new RunExample("14", "\n" + ex14.toString(),
-                Controller.initController(ex14, logFilePath)));
+        try{
+            IStmt ex15 = Example15();
+            menu.addCommand(new RunExample("15", "\n" + ex15.toString(),
+                    Controller.initController(ex15, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
+        try{
+            IStmt ex16 = Example16();
+            menu.addCommand(new RunExample("16", "\n" + ex16.toString(),
+                    Controller.initController(ex16, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
+
+        try{
+            IStmt ex17 = Example17();
+            menu.addCommand(new RunExample("17", "\n" + ex17.toString(),
+                    Controller.initController(ex17, logFilePath)));
+        }catch(MyException e){
+            System.out.print(e.getMessage());
+        }
 
         menu.show();
     }

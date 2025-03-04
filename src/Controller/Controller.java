@@ -9,6 +9,7 @@ import Model.Values.IValue;
 import Model.Values.RefValue;
 import Repository.IRepository;
 import Repository.Repository;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -43,6 +44,18 @@ public class Controller {
     public Controller(IRepository repo) {
         this.repo = repo;
         this.displayPrgState = true;
+    }
+
+    public static Controller initController(IStmt stmt, String logFilePath,
+                                            MyIDictionary<String, Pair<List<String>,IStmt>> procTable) throws MyException{
+        Controller controller = new Controller(logFilePath);
+        var typeEnv = new MyDictionary<String, IType>();
+        stmt.typecheck(typeEnv);
+        PrgState prg = new PrgState(stmt,procTable);
+        controller.addPrgState(prg);
+
+        //executeOptions(controller, prg);
+        return controller;
     }
 
     public static Controller initController(IStmt stmt, String logFilePath) throws MyException{
@@ -243,4 +256,8 @@ public class Controller {
         return repo.getPrgStateIds();
     }
 
+    public MyIDictionary<String, Pair<List<String>, IStmt>> getProcTable(int id){return repo.getProcTable(id);}
+
+    public List<String> getLockTableKeys(int id){return repo.getLockTableKeys(id);}
+    public List<String> getLockTableValues(int id){return repo.getLockTableValues(id);}
 }
